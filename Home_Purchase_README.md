@@ -3,21 +3,20 @@ Codebase for training and evaluating LeadPoint's HomePurchase Lead Scoring model
 
 ---
 
-## Table of Contents
+## Table of Contents  
 
 1. [Overview](#overview)  
 2. [Installation](#installation)  
    - [Cloning the Codebase](#cloning-the-codebase)  
    - [Creating Docker Environment](#creating-docker-environment)  
-     - [For macOS](#macos)  
-     - [For Linux](#linux)  
-     - [For Windows](#windows)  
+     - [For macOS/Linux](#for-macoslinux)  
+     - [For Windows](#for-windows)  
 3. [Environment Variables in `.env`](#environment-variables-in-env)  
 4. [Outputs](#outputs)  
 
 ---
 
-## 1. Overview
+## 1. [Overview](#table-of-contents)  
 
 This repository contains the code for training and evaluating LeadPoint's **HomePurchase Lead Scoring Models** using:  
 - **Python Libraries**: Pandas, Scikit-Learn, and MLFlow.  
@@ -25,9 +24,9 @@ This repository contains the code for training and evaluating LeadPoint's **Home
 
 ---
 
-## 2. Installation
+## 2. [Installation](#table-of-contents)  
 
-### 2.1 Cloning the Codebase
+### 2.1 [Cloning the Codebase](#table-of-contents)  
 
 Clone the repository using the following command:  
 
@@ -37,11 +36,11 @@ git clone https://shivashankar.rampur@stash.leadpointcorp.net/scm/lpml/ml_leadcl
 
 ---
 
-### 2.2 Creating Docker Environment
+### 2.2 [Creating Docker Environment](#table-of-contents)  
 
 The Docker environment ensures consistent and reproducible execution across different platforms.
 
-#### 2.2.1 macOS  
+#### 2.2.1 [For macOS/Linux](#table-of-contents)  
 
 **Build the Docker Image:**  
 
@@ -56,7 +55,7 @@ docker run -it \
   -p 8888:8888 \
   -v ~/.credentials:/root/.credentials \
   -v ~/.aws:/root/.aws \
-  -v /Users/santhoshnagaraj/Desktop/Repository/ML_Serve_Working/ml_leadclass_purchase/Lead_Point_ML:/app \
+  -v $(pwd):/app \
   --env-file ./.env \
   --name newhome \
   --rm ml_train \
@@ -66,44 +65,22 @@ docker run -it \
   --config_file "$(grep CONFIG_FILE .env | cut -d '=' -f2-)"
 ```
 
+**Key Points:**  
+- `$(pwd)` dynamically resolves the current directory path.  
+
 ---
 
-#### 2.2.2 Linux  
+#### 2.2.2 [For Windows](#table-of-contents)  
 
 **Build the Docker Image:**  
-
-```bash
-docker build --no-cache --build-arg req_file=./requirements.txt -t ml_train .
-```
-
-**Run the Docker Image:**  
-
-```bash
-docker run -it \
-  -p 8888:8888 \
-  -v ~/.credentials:/root/.credentials \
-  -v ~/.aws:/root/.aws \
-  -v /Users/santhoshnagaraj/Desktop/Repository/ML_Serve_Working/ml_leadclass_purchase/Lead_Point_ML:/app \
-  --env-file ./.env \
-  --name newhome \
-  --rm ml_train \
-  python Train.py \
-  --start_date "$(grep START_DATE .env | cut -d '=' -f2-)" \
-  --end_date "$(grep END_DATE .env | cut -d '=' -f2-)" \
-  --config_file "$(grep CONFIG_FILE .env | cut -d '=' -f2-)"
-```
-
----
-
-#### 2.2.3 Windows  
-
-**Build and Run the Docker Image:**  
-
-On Windows, use the following commands in PowerShell to build and run the Docker container:  
 
 ```powershell
 docker build --no-cache --build-arg req_file=./requirements.txt -t ml_train .
+```
 
+**Run the Docker Image:**  
+
+```powershell
 docker run -it `
   -p 8888:8888 `
   -v $HOME\.credentials:/root/.credentials `
@@ -118,9 +95,12 @@ docker run -it `
   --config_file "$(Get-Content .env | Select-String 'CONFIG_FILE' | ForEach-Object { $_ -replace 'CONFIG_FILE=', '' })"
 ```
 
+**Key Points:**  
+- `${PWD}` dynamically resolves the current directory path in PowerShell.  
+
 ---
 
-## 3. Environment Variables in `.env`
+## 3. [Environment Variables in `.env`](#table-of-contents)  
 
 Configure the `.env` file with the following variables:  
 
@@ -138,10 +118,9 @@ AWS_ACCESS_KEY_ID=
 
 ---
 
-## 4. Outputs  
+## 4. [Outputs](#table-of-contents)  
 
 The training process generates:  
 - **Model**: The trained machine learning pipeline stored in MLflow.  
 - **Metadata**: Tags such as `Start_Date`, `End_Date`, and `Trained_Date`.  
 - **Artifacts**: Includes preprocessing steps, configuration files, and model parameters.  
-
