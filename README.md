@@ -1,64 +1,64 @@
-# Home Purchase Lead Scoring project Documentation
+# LeadClass - HomePurchase  
+Codebase for training and evaluating LeadPoint's HomePurchase Lead Scoring models in Python using Pandas, Scikit-Learn, and MLFlow.
+
+---
 
 ## Table of Contents
-1. [Overview](#overview)
-2. [Setup and Working](#setup-and-working)
-   - [Using Docker](#using-docker)
-     - [Build the Docker Image](#build-the-docker-image)
-     - [Run the Docker Container](#run-the-docker-container)
-     - [Environment Variables in .env](#environment-variables-in-env)
-   - [Using Python Virtual Environment (venv)](#using-python-virtual-environment-venv)
-     - [Create a Virtual Environment](#create-a-virtual-environment)
-     - [Install Dependencies](#install-dependencies)
-     - [Run the Training Script](#run-the-training-script)
-3. [Outputs](#outputs)
-4. [Model Serving](#model-serving)
-5. [Logging and Debugging](#logging-and-debugging)
+
+1. [Overview](#overview)  
+2. [Installation](#installation)  
+   - [Cloning the Codebase](#cloning-the-codebase)  
+   - [Creating Docker Environment](#creating-docker-environment)  
+     - [For macOS](#macos)  
+     - [For Linux](#linux)  
+     - [For Windows](#windows)  
+3. [Environment Variables in `.env`](#environment-variables-in-env)  
+4. [Outputs](#outputs)  
 
 ---
 
-## Overview
+## 1. Overview
 
-This document provides comprehensive instructions for setting up and running the Home Purchase Lead Scoring project. It includes two methods for setup:
-
-1. **Using Docker**: A containerized environment for consistent execution.
-2. **Using Python Virtual Environment (venv)**: A local setup for flexibility and lightweight development.
-
-Learn how to install dependencies, configure the environment, run training scripts, and serve trained models.
+This repository contains the code for training and evaluating LeadPoint's **HomePurchase Lead Scoring Models** using:  
+- **Python Libraries**: Pandas, Scikit-Learn, and MLFlow.  
+- **Docker**: For containerized execution.  
 
 ---
 
-## 1. Setup and Working
+## 2. Installation
 
-### 1.1 Using Docker
+### 2.1 Cloning the Codebase
 
-#### 1.1.1 Build the Docker Image
+Clone the repository using the following command:  
 
-To create a Docker image, use the following command:
+```bash
+git clone https://shivashankar.rampur@stash.leadpointcorp.net/scm/lpml/ml_leadclass_purchase.git
+```
+
+---
+
+### 2.2 Creating Docker Environment
+
+The Docker environment ensures consistent and reproducible execution across different platforms.
+
+#### 2.2.1 macOS  
+
+**Build the Docker Image:**  
 
 ```bash
 docker build --no-cache --build-arg req_file=./requirements.txt -t ml_train .
 ```
 
-**Explanation:**
-- `--no-cache`: Ensures a clean build by not using cached layers.
-- `--build-arg req_file=./requirements.txt`: Specifies the path to the dependencies file.
-- `-t ml_train`: Tags the Docker image as `ml_train`.
-
-#### 1.1.2 Run the Docker Container
-
-Run the Docker container to execute the training script:
-
-- **macOS/Linux:**
+**Run the Docker Image:**  
 
 ```bash
 docker run -it \
   -p 8888:8888 \
   -v ~/.credentials:/root/.credentials \
   -v ~/.aws:/root/.aws \
-  -v $(pwd):/app \
+  -v /Users/santhoshnagaraj/Desktop/Repository/ML_Serve_Working/ml_leadclass_purchase/Lead_Point_ML:/app \
   --env-file ./.env \
-  --name homepurchase_train \
+  --name newhome \
   --rm ml_train \
   python Train.py \
   --start_date "$(grep START_DATE .env | cut -d '=' -f2-)" \
@@ -66,16 +66,51 @@ docker run -it \
   --config_file "$(grep CONFIG_FILE .env | cut -d '=' -f2-)"
 ```
 
-- **Windows (PowerShell):**
+---
+
+#### 2.2.2 Linux  
+
+**Build the Docker Image:**  
+
+```bash
+docker build --no-cache --build-arg req_file=./requirements.txt -t ml_train .
+```
+
+**Run the Docker Image:**  
+
+```bash
+docker run -it \
+  -p 8888:8888 \
+  -v ~/.credentials:/root/.credentials \
+  -v ~/.aws:/root/.aws \
+  -v /Users/santhoshnagaraj/Desktop/Repository/ML_Serve_Working/ml_leadclass_purchase/Lead_Point_ML:/app \
+  --env-file ./.env \
+  --name newhome \
+  --rm ml_train \
+  python Train.py \
+  --start_date "$(grep START_DATE .env | cut -d '=' -f2-)" \
+  --end_date "$(grep END_DATE .env | cut -d '=' -f2-)" \
+  --config_file "$(grep CONFIG_FILE .env | cut -d '=' -f2-)"
+```
+
+---
+
+#### 2.2.3 Windows  
+
+**Build and Run the Docker Image:**  
+
+On Windows, use the following commands in PowerShell to build and run the Docker container:  
 
 ```powershell
+docker build --no-cache --build-arg req_file=./requirements.txt -t ml_train .
+
 docker run -it `
   -p 8888:8888 `
   -v $HOME\.credentials:/root/.credentials `
   -v $HOME\.aws:/root/.aws `
   -v ${PWD}:/app `
   --env-file .\.env `
-  --name homepurchase_train `
+  --name newhome `
   --rm ml_train `
   python Train.py `
   --start_date "$(Get-Content .env | Select-String 'START_DATE' | ForEach-Object { $_ -replace 'START_DATE=', '' })" `
@@ -83,95 +118,30 @@ docker run -it `
   --config_file "$(Get-Content .env | Select-String 'CONFIG_FILE' | ForEach-Object { $_ -replace 'CONFIG_FILE=', '' })"
 ```
 
-**Key Details:**
-- **Port Mapping (`-p 8888:8888`)**: Links container and host ports for Jupyter or other services.
-- **Volume Mounts (`-v`)**:
-  - Mounts AWS credentials for resource access.
-  - Mounts project files to the container.
-- **Environment Variables (`--env-file ./.env`)**: Passes necessary configurations like dates and file paths.
-- **Script Execution (`python Train.py`)**: Executes the training script with arguments.
+---
 
-#### 1.1.3 Environment Variables in `.env`
+## 3. Environment Variables in `.env`
 
-The `.env` file must include:
+Configure the `.env` file with the following variables:  
 
 ```env
-START_DATE=2024-04-26
-END_DATE=2024-07-19
-CONFIG_FILE=config/FeatureList.yaml
+PYTHONPATH=/app/imports:/app/train_models:/app/:$PYTHONPATH
+py_file=Train.py
+py_folder=/app
+START_DATE=DATE_SUB(NOW(), INTERVAL 165 DAY)
+END_DATE=DATE_SUB(NOW(), INTERVAL 80 DAY)
+CONFIG_FILE=FeaturesList-6.3.yaml
+MLFLOW_TRACKING_URI=http://app02b-mp.aws.stage.leadpointcorp.net:5020
+AWS_SECRET_ACCESS_KEY=
+AWS_ACCESS_KEY_ID=
 ```
 
 ---
 
-### 1.2 Using Python Virtual Environment (venv)
+## 4. Outputs  
 
-#### 1.2.1 Create a Virtual Environment
+The training process generates:  
+- **Model**: The trained machine learning pipeline stored in MLflow.  
+- **Metadata**: Tags such as `Start_Date`, `End_Date`, and `Trained_Date`.  
+- **Artifacts**: Includes preprocessing steps, configuration files, and model parameters.  
 
-To create and activate a virtual environment:
-
-- **macOS/Linux:**
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-- **Windows (Command Prompt):**
-
-```cmd
-python -m venv venv
-venv\Scripts\activate
-```
-
-#### 1.2.2 Install Dependencies
-
-Install the required Python libraries:
-
-```bash
-pip install -r requirements.txt
-```
-
-#### 1.2.3 Run the Training Script
-
-Run the script directly:
-
-```bash
-python Train.py --start_date 2024-04-26 --end_date 2024-07-19 --config_file config/FeatureList.yaml
-```
-
-**Arguments:**
-- `--start_date`: Start date for the data.
-- `--end_date`: End date for the data.
-- `--config_file`: Path to the YAML configuration file.
-
----
-
-## 2. Outputs
-
-The training process logs the following to MLflow:
-
-1. **Model**: The trained machine learning pipeline.
-2. **Metadata**: Tags like `Start_Date`, `End_Date`, and `Trained_Date`.
-3. **Artifacts**: Includes preprocessing steps, configuration files, and model parameters.
-
----
-
-## 3. Model Serving
-
-Serve the trained model using MLflow:
-
-```bash
-mlflow models serve -m models:/custom_model/Production -p 5001
-```
-
-Replace `Production` with the desired stage or version of the model.
-
----
-
-## 4. Logging and Debugging
-
-Logs are output to the console during training, with details about:
-
-- **Pipeline Creation**: Logs for each stage of the pipeline.
-- **Data Processing**: Tracks steps from preprocessing to model training.
-- **Errors and Warnings**: Helps in identifying issues and debugging configurations.
