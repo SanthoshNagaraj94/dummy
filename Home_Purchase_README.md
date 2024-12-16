@@ -108,7 +108,7 @@ Configure the `.env` file with the following variables:
 PYTHONPATH=/app/imports:/app/train_models:/app/:$PYTHONPATH
 py_file=Train.py
 py_folder=/app
-START_DATE=DATE_SUB(NOW(), INTERVAL 165 DAY)
+START_DATE=DATE_SUB(NOW(), INTERVAL 165 DAY) 
 END_DATE=DATE_SUB(NOW(), INTERVAL 80 DAY)
 CONFIG_FILE=FeaturesList-6.3.yaml
 MLFLOW_TRACKING_URI=http://app02b-mp.aws.stage.leadpointcorp.net:5020
