@@ -1,4 +1,4 @@
-# Setup and Configuration Documentation for the Project
+# Home Purchase Lead Scoring project Documentation
 
 ## Table of Contents
 1. [Overview](#overview)
